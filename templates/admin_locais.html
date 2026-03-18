@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Locais</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-4">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="escritorio">Escritório</option>
+          <option value="cliente">Cliente</option>
+          <option value="grafica">Gráfica</option>
+          <option value="almoxarifado">Almoxarifado</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Município</label>
+        <select class="form-select" id="municipio_select" name="municipio_id" required></select>
+<div class="form-text">Digite para buscar município (nome/UF).</div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Endereço</label>
+        <input class="form-control" name="endereco">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead>
+          <tr><th>ID</th><th>Nome</th><th>Tipo</th><th>Município</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for l in locais %}
+            <tr>
+              <td>{{ l.id }}</td>
+              <td>{{ l.nome }}</td>
+              <td>{{ l.tipo }}</td>
+              <td>{{ l.municipio.nome }}</td>
+              <td>{{ l.municipio.estado.sigla }}</td>
+              <td class="text-end">
+                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_local_edit', local_id=l.id) }}">Editar</a>
+<form method="post" action="{{ url_for('admin_local_delete', local_id=l.id) }}" class="d-inline" onsubmit="return confirm('Excluir este local?');">
+  <button class="btn btn-sm btn-outline-danger ms-2">Excluir</button>
+</form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  $('#municipio_select').select2({
+    width:'100%',
+    minimumInputLength: 0,
+    placeholder:'Digite para buscar...',
+    ajax:{ url:"{{ url_for('api_municipios') }}", dataType:'json', delay:250,
+      data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+  });
+});
+</script>
+
+{% endblock %}

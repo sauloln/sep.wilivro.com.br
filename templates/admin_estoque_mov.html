@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Movimentações de Estoque</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+          <option value="transferencia">Transferência</option>
+          <option value="ajuste">Ajuste</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Produto</label>
+        <select class="form-select" id="produto_select" name="produto_id" required></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Qtd</label>
+        <input class="form-control" name="qtd" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Depósito origem</label>
+        <select class="form-select" id="dep_origem_select" name="deposito_origem_id"></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Depósito destino</label>
+        <select class="form-select" id="dep_dest_select" name="deposito_destino_id"></select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Documento ref</label>
+        <input class="form-control" name="documento_ref" placeholder="NF, OS, pedido...">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Observação</label>
+        <input class="form-control" name="observacao">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Registrar</button>
+      </div>
+      <div class="form-text">V1 usa IDs (produto/depósito). V2 terá busca/autocomplete.</div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Qtd</th><th>Origem</th><th>Destino</th><th>Doc</th></tr></thead>
+        <tbody>
+          {% for m in movs %}
+            <tr>
+              <td>{{ m.data }}</td>
+              <td>{{ m.tipo }}</td>
+              <td>{{ m.produto_id }}</td>
+              <td>{{ m.qtd }}</td>
+              <td>{{ m.deposito_origem_id or '-' }}</td>
+              <td>{{ m.deposito_destino_id or '-' }}</td>
+              <td>{{ m.documento_ref or '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-2">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_estoque_saldos_csv') }}">Exportar saldos CSV</a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function make(sel, url, ph){
+    $(sel).select2({
+      width:'100%', allowClear:true, minimumInputLength: 0,
+      placeholder: ph,
+      ajax:{ url:url, dataType:'json', delay:250,
+        data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+    });
+  }
+  make('#produto_select', "{{ url_for('api_produtos') }}", 'Buscar produto...');
+  make('#dep_origem_select', "{{ url_for('api_depositos') }}", 'Buscar depósito...');
+  make('#dep_dest_select', "{{ url_for('api_depositos') }}", 'Buscar depósito...');
+});
+</script>
+
+{% endblock %}

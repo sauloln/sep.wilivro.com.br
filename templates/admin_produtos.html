@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Produtos</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-2">
+        <label class="form-label">SKU</label>
+        <input class="form-control" name="sku" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="insumo">Insumo</option>
+          <option value="acabado">Produto acabado</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Unidade</label>
+        <select class="form-select" name="unidade">
+          {% for u in unidades %}
+            <option value="{{ u }}">{{ u }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Estoque mín.</label>
+        <input class="form-control" name="estoque_minimo" placeholder="opcional">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h6 mb-2">Importar em massa (CSV ou XLSX)</h2>
+    <form method="post" action="{{ url_for('admin_produtos_import') }}" enctype="multipart/form-data" class="row g-2 align-items-end">
+      <div class="col-md-8">
+        <label class="form-label">Arquivo</label>
+        <input class="form-control" type="file" name="arquivo" accept=".csv,.xlsx" required>
+        <div class="form-text">Colunas: sku,nome,tipo(insumo|acabado),unidade,estoque_minimo(opcional),ativo(0/1 opcional)</div>
+      </div>
+      <div class="col-md-4 d-grid">
+        <button class="btn btn-outline-primary">Importar</button>
+      </div>
+    </form>
+    <div class="mt-2">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_produtos_modelo') }}">Baixar modelo CSV</a>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>SKU</th><th>Nome</th><th>Tipo</th><th>Un.</th><th>Ativo</th><th></th></tr></thead>
+        <tbody>
+          {% for p in produtos %}
+            <tr>
+              <td>{{ p.sku }}</td>
+              <td>{{ p.nome }}</td>
+              <td>{{ p.tipo }}</td>
+              <td>{{ p.unidade }}</td>
+              <td>{% if p.ativo %}Sim{% else %}Não{% endif %}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_produto_edit', produto_id=p.id) }}">Editar</a>
+<form method="post" action="{{ url_for('admin_produto_delete', produto_id=p.id) }}" class="d-inline" onsubmit="return confirm('Excluir este produto?');">
+  <button class="btn btn-sm btn-outline-danger ms-2">Excluir</button>
+</form></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

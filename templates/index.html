@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h5 mb-2">{{ app_title }}</h1>
+        <p class="text-muted mb-3">Acesso restrito. Faça login para continuar.</p>
+        <div class="d-grid">
+          <a class="btn btn-primary" href="{{ url_for('admin_login') }}">Entrar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

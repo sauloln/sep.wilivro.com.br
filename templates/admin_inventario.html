@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Inventário / Contagem (Ajuste)</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-4">
+        <label class="form-label">Depósito</label>
+        <select class="form-select" id="deposito_select" name="deposito_id" required></select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Produto</label>
+        <select class="form-select" id="produto_select" name="produto_id" required></select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Saldo contado</label>
+        <input class="form-control" name="novo_saldo" required>
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Aplicar ajuste</button>
+      </div>
+      <div class="col-12">
+        <div class="form-text">Este ajuste define o saldo do produto no depósito para o valor contado.</div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h6">Últimos ajustes</h2>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead><tr><th>Data</th><th>Produto (ID)</th><th>Depósito (ID)</th><th>Novo saldo</th><th>Doc</th></tr></thead>
+        <tbody>
+          {% for m in ajustes %}
+            <tr>
+              <td>{{ m.data }}</td>
+              <td>{{ m.produto_id }}</td>
+              <td>{{ m.deposito_destino_id }}</td>
+              <td>{{ m.qtd }}</td>
+              <td>{{ m.documento_ref or '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function make(sel, url, ph){
+    $(sel).select2({
+      width:'100%', allowClear:true, minimumInputLength: 0,
+      placeholder: ph,
+      ajax:{ url:url, dataType:'json', delay:250,
+        data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+    });
+  }
+  make('#produto_select', "{{ url_for('api_produtos') }}", 'Buscar produto...');
+  make('#deposito_select', "{{ url_for('api_depositos') }}", 'Buscar depósito...');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Editar Patrimônio</h1>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">Código</label>
+        <input class="form-control" value="{{ item.codigo }}" disabled>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Categoria</label>
+        <input class="form-control" name="categoria" value="{{ item.categoria }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Descrição</label>
+        <input class="form-control" name="descricao" value="{{ item.descricao }}" required>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Marca</label>
+        <input class="form-control" name="marca" value="{{ item.marca or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Modelo</label>
+        <input class="form-control" name="modelo" value="{{ item.modelo or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Serial</label>
+        <input class="form-control" name="serial" value="{{ item.serial or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Responsável</label>
+        <input class="form-control" name="responsavel" value="{{ item.responsavel or '' }}">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          {% for s in ["em_uso","em_estoque","alocado","manutencao","baixado"] %}
+            <option value="{{ s }}" {% if item.status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Local atual (ID)</label>
+        <input class="form-control" name="local_atual_id" value="{{ item.local_atual_id or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Projeto (ID)</label>
+        <input class="form-control" name="projeto_id" value="{{ item.projeto_id or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Valor</label>
+        <input class="form-control" name="valor" value="{{ item.valor or '' }}">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Observação</label>
+        <textarea class="form-control" name="observacao" rows="3">{{ item.observacao or '' }}</textarea>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin_patrimonio') }}">Voltar</a>
+        <button class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+
+    <hr>
+    <h2 class="h6">Movimentar</h2>
+    <form method="post" action="{{ url_for('admin_patrimonio_move', item_id=item.id) }}" class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="entrada">Entrada</option>
+          <option value="transferencia">Transferência</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="baixa">Baixa</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Origem (Local ID)</label>
+        <input class="form-control" name="origem_local_id" value="{{ item.local_atual_id or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Destino (Local ID)</label>
+        <input class="form-control" name="destino_local_id">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Responsável</label>
+        <input class="form-control" name="responsavel">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Observação</label>
+        <input class="form-control" name="observacao">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-outline-primary">Registrar movimentação</button>
+      </div>
+    </form>
+
+    <hr>
+    <h2 class="h6">Histórico</h2>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead><tr><th>Data</th><th>Tipo</th><th>Origem</th><th>Destino</th><th>Resp.</th><th>Obs.</th></tr></thead>
+        <tbody>
+          {% for mv in movs %}
+            <tr>
+              <td>{{ mv.data }}</td>
+              <td>{{ mv.tipo }}</td>
+              <td>{{ mv.origem_local_id or '-' }}</td>
+              <td>{{ mv.destino_local_id or '-' }}</td>
+              <td>{{ mv.responsavel or '-' }}</td>
+              <td>{{ mv.observacao or '' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <hr>
+    <form method="post" action="{{ url_for('admin_patrimonio_delete', item_id=item.id) }}" onsubmit="return confirm('Excluir este item?');">
+      <button class="btn btn-outline-danger btn-sm">Excluir item</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

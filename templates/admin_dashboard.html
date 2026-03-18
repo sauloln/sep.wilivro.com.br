@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-end mb-3">
+  <div>
+    <h1 class="h4 mb-1">Painel Administrativo</h1>
+    <div class="text-muted small">Cadastros, movimentações e relatórios</div>
+  </div>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-primary" href="{{ url_for('admin_relatorios') }}">Relatórios</a>
+    <a class="btn btn-primary" href="{{ url_for('admin_patrimonio') }}">Patrimônio</a>
+  </div>
+</div>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Itens Patrimoniais</div>
+        <div class="h4 mb-0">{{ kpis.patrimonio_total }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Produtos</div>
+        <div class="h4 mb-0">{{ kpis.produtos_total }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Depósitos</div>
+        <div class="h4 mb-0">{{ kpis.depositos_total }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Movimentações (30d)</div>
+        <div class="h4 mb-0">{{ kpis.mov_30d }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6">Cadastros</h2>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_locais') }}">Locais</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_depositos') }}">Depósitos</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_produtos') }}">Produtos</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_clientes') }}">Clientes</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_projetos') }}">Projetos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h6">Movimentações</h2>
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_estoque_mov') }}">Mov. Estoque</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_inventario') }}">Inventário</a>
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('admin_patrimonio_mov') }}">Mov. Patrimônio</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

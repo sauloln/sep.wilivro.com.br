@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Depósitos</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-5">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="interno">Interno</option>
+          <option value="grafica">Gráfica</option>
+          <option value="terceiro">Terceiro</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Local (opcional)</label>
+        <select class="form-select" id="local_select" name="local_id"></select>
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>ID</th><th>Nome</th><th>Tipo</th><th>Local</th><th></th></tr></thead>
+        <tbody>
+          {% for d in depositos %}
+            <tr>
+              <td>{{ d.id }}</td>
+              <td>{{ d.nome }}</td>
+              <td>{{ d.tipo }}</td>
+              <td>{{ d.local_id or '-' }}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_deposito_edit', deposito_id=d.id) }}">Editar</a>
+<form method="post" action="{{ url_for('admin_deposito_delete', deposito_id=d.id) }}" class="d-inline" onsubmit="return confirm('Excluir este depósito?');">
+  <button class="btn btn-sm btn-outline-danger ms-2">Excluir</button>
+</form></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  $('#local_select').select2({
+    width:'100%', allowClear:true, minimumInputLength: 0,
+    placeholder:'Buscar local...',
+    ajax:{ url:"{{ url_for('api_locais') }}", dataType:'json', delay:250,
+      data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+  });
+});
+</script>
+
+{% endblock %}

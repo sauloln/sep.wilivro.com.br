@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Clientes</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">CNPJ</label>
+        <input class="form-control" name="cnpj">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Contato</label>
+        <input class="form-control" name="contato">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Telefone</label>
+        <input class="form-control" name="telefone">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Email</label>
+        <input class="form-control" name="email">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <table class="table table-sm">
+      <thead><tr><th>ID</th><th>Nome</th><th>CNPJ</th><th></th></tr></thead>
+      <tbody>
+        {% for c in clientes %}
+          <tr><td>{{ c.id }}</td><td>{{ c.nome }}</td><td>{{ c.cnpj or '-' }}</td><td class='text-end'><form method='post' action='{{ url_for("admin_cliente_delete", cliente_id=c.id) }}' class='d-inline' onsubmit='return confirm("Excluir este cliente?");'><button class='btn btn-sm btn-outline-danger'>Excluir</button></form></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

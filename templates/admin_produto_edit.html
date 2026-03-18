@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Editar Produto</h1>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">SKU</label>
+        <input class="form-control" name="sku" value="{{ produto.sku }}" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" value="{{ produto.nome }}" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="insumo" {% if produto.tipo=='insumo' %}selected{% endif %}>Insumo</option>
+          <option value="acabado" {% if produto.tipo=='acabado' %}selected{% endif %}>Produto acabado</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Unidade</label>
+        <select class="form-select" name="unidade">
+          {% for u in unidades %}
+            <option value="{{ u }}" {% if produto.unidade==u %}selected{% endif %}>{{ u }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Estoque mín.</label>
+        <input class="form-control" name="estoque_minimo" value="{{ produto.estoque_minimo or '' }}">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Ativo</label>
+        <select class="form-select" name="ativo">
+          <option value="1" {% if produto.ativo %}selected{% endif %}>Sim</option>
+          <option value="0" {% if not produto.ativo %}selected{% endif %}>Não</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label class="form-label">Observação</label>
+        <textarea class="form-control" name="observacao" rows="3">{{ produto.observacao or '' }}</textarea>
+      </div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin_produtos') }}">Voltar</a>
+        <button class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+    <hr>
+    <form method="post" action="{{ url_for('admin_produto_delete', produto_id=produto.id) }}" onsubmit="return confirm('Excluir este produto?');">
+      <button class="btn btn-outline-danger btn-sm">Excluir</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

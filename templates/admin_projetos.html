@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Projetos</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Cliente (ID)</label>
+        <select class="form-select" id="cliente_select" name="cliente_id"></select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Local (ID)</label>
+        <select class="form-select" id="local_select" name="local_id"></select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          <option value="ativo">Ativo</option>
+          <option value="concluido">Concluído</option>
+          <option value="pausado">Pausado</option>
+        </select>
+      </div>
+      <div class="col-md-9">
+        <label class="form-label">Observação</label>
+        <input class="form-control" name="observacao">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <table class="table table-sm">
+      <thead><tr><th>ID</th><th>Nome</th><th>Status</th><th>Cliente</th><th>Local</th></tr></thead>
+      <tbody>
+        {% for p in projetos %}
+          <tr><td>{{ p.id }}</td><td>{{ p.nome }}</td><td>{{ p.status }}</td><td>{{ p.cliente_id or '-' }}</td><td>{{ p.local_id or '-' }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function make(sel, url, ph){
+    $(sel).select2({
+      width:'100%', allowClear:true, minimumInputLength: 0,
+      placeholder: ph,
+      ajax:{ url:url, dataType:'json', delay:250,
+        data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+    });
+  }
+  make('#cliente_select', "{{ url_for('api_clientes') }}", 'Buscar cliente...');
+  make('#local_select', "{{ url_for('api_locais') }}", 'Buscar local...');
+});
+</script>
+
+{% endblock %}

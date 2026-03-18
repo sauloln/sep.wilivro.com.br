@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block content %}
+{% set pg = rel.get('pagination', {}) %}
+<h1 class="h5 mb-3">Relatórios Essenciais</h1>
+
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Material acabado (total)</div>
+        <div class="h4 mb-0">
+          <a href="{{ url_for('admin_relatorios_saldos', tipo='acabado') }}" class="text-decoration-none">{{ rel.acabado_total }}</a>
+        </div>
+        <div class="mt-2 small text-muted">Soma de saldos de produtos tipo "acabado".</div>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_relatorios_saldos', tipo='acabado') }}">Detalhar</a>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_saldos_xlsx', tipo='acabado') }}">Exportar planilha</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Insumos (total)</div>
+        <div class="h4 mb-0">
+          <a href="{{ url_for('admin_relatorios_saldos', tipo='insumo') }}" class="text-decoration-none">{{ rel.insumo_total }}</a>
+        </div>
+        <div class="mt-2 small text-muted">Soma de saldos de produtos tipo "insumo".</div>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_relatorios_saldos', tipo='insumo') }}">Detalhar</a>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_saldos_xlsx', tipo='insumo') }}">Exportar planilha</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="text-muted small">Patrimônio (itens)</div>
+        <div class="h4 mb-0">
+          <a href="{{ url_for('admin_relatorios_patrimonio') }}" class="text-decoration-none">{{ rel.patrimonio_total }}</a>
+        </div>
+        <div class="mt-2 small text-muted">Inventário por localização e status.</div>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_relatorios_patrimonio') }}">Detalhar</a>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_patrimonio_xlsx') }}">Exportar planilha</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h2 class="h6 mb-0">Saldos por tipo e depósito (resumo)</h2>
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_relatorios_saldos', tipo='todos') }}">Ver detalhamento completo</a>
+    </div>
+
+    <div class="table-responsive mt-2">
+      <table class="table table-sm">
+        <thead><tr><th>Tipo</th><th>Depósito</th><th>Saldo</th></tr></thead>
+        <tbody>
+          {% for row in rel.by_tipo_deposito %}
+            <tr><td>{{ row.tipo }}</td><td>{{ row.deposito }}</td><td>{{ row.saldo }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+{% set kind='saldos' %}{% set page=pg.get('page_saldos', 1) %}{% set total_pages=pg.get('total_pages_saldos', 1) %}
+
+{% set pg = rel.get('pagination', {}) %}
+<nav aria-label="Paginação" class="mt-2">
+  <ul class="pagination pagination-sm mb-0">
+    {% set prev = page - 1 %}
+    {% set next = page + 1 %}
+    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('admin_relatorios', page_saldos=(prev if kind=='saldos' else pg.get('page_saldos', 1)), page_min=(prev if kind=='min' else pg.get('page_min', 1)), per_page=pg.get('per_page', 25)) }}">«</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">Página {{ page }} / {{ total_pages }}</span></li>
+    <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('admin_relatorios', page_saldos=(next if kind=='saldos' else pg.get('page_saldos', 1)), page_min=(next if kind=='min' else pg.get('page_min', 1)), per_page=pg.get('per_page', 25)) }}">»</a>
+    </li>
+  </ul>
+</nav>
+
+
+    </div>
+
+    {% if rel.saldos_total_pages > 1 %}
+      <nav class="mt-2">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item {% if rel.saldos_page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_relatorios', saldos_page=rel.saldos_page-1, minimo_page=rel.minimo_page, per_page=rel.per_page) }}">Anterior</a>
+          </li>
+          <li class="page-item disabled"><span class="page-link">Página {{ rel.saldos_page }} / {{ rel.saldos_total_pages }}</span></li>
+          <li class="page-item {% if rel.saldos_page >= rel.saldos_total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_relatorios', saldos_page=rel.saldos_page+1, minimo_page=rel.minimo_page, per_page=rel.per_page) }}">Próxima</a>
+          </li>
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h2 class="h6 mb-0">Abaixo do estoque mínimo</h2>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_relatorios_minimo') }}">Detalhar</a>
+        <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_abaixo_minimo_xlsx') }}">Exportar planilha</a>
+      </div>
+    </div>
+
+    <div class="table-responsive mt-2">
+      <table class="table table-sm">
+        <thead><tr><th>SKU</th><th>Produto</th><th>Tipo</th><th>Saldo total</th><th>Mínimo</th></tr></thead>
+        <tbody>
+          {% for row in rel.abaixo_minimo %}
+            <tr>
+              <td>{{ row.sku }}</td>
+              <td>{{ row.nome }}</td>
+              <td>{{ row.tipo }}</td>
+              <td>{{ row.saldo_total }}</td>
+              <td>{{ row.minimo }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+{% set kind='min' %}{% set page=pg.get('page_min', 1) %}{% set total_pages=pg.get('total_pages_min', 1) %}
+
+{% set pg = rel.get('pagination', {}) %}
+<nav aria-label="Paginação" class="mt-2">
+  <ul class="pagination pagination-sm mb-0">
+    {% set prev = page - 1 %}
+    {% set next = page + 1 %}
+    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('admin_relatorios', page_saldos=(prev if kind=='saldos' else pg.get('page_saldos', 1)), page_min=(prev if kind=='min' else pg.get('page_min', 1)), per_page=pg.get('per_page', 25)) }}">«</a>
+    </li>
+    <li class="page-item disabled"><span class="page-link">Página {{ page }} / {{ total_pages }}</span></li>
+    <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('admin_relatorios', page_saldos=(next if kind=='saldos' else pg.get('page_saldos', 1)), page_min=(next if kind=='min' else pg.get('page_min', 1)), per_page=pg.get('per_page', 25)) }}">»</a>
+    </li>
+  </ul>
+</nav>
+
+
+    </div>
+
+    {% if rel.minimo_total_pages > 1 %}
+      <nav class="mt-2">
+        <ul class="pagination pagination-sm mb-0">
+          <li class="page-item {% if rel.minimo_page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_relatorios', saldos_page=rel.saldos_page, minimo_page=rel.minimo_page-1, per_page=rel.per_page) }}">Anterior</a>
+          </li>
+          <li class="page-item disabled"><span class="page-link">Página {{ rel.minimo_page }} / {{ rel.minimo_total_pages }}</span></li>
+          <li class="page-item {% if rel.minimo_page >= rel.minimo_total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin_relatorios', saldos_page=rel.saldos_page, minimo_page=rel.minimo_page+1, per_page=rel.per_page) }}">Próxima</a>
+          </li>
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

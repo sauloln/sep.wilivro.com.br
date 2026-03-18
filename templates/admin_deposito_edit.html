@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Editar Depósito</h1>
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-6">
+        <label class="form-label">Nome</label>
+        <input class="form-control" name="nome" value="{{ deposito.nome }}" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          {% for opt,val in [("Interno","interno"),("Gráfica","grafica"),("Terceiro","terceiro")] %}
+            <option value="{{ val }}" {% if deposito.tipo==val %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Local (ID)</label>
+        <input class="form-control" name="local_id" value="{{ deposito.local_id or '' }}">
+      </div>
+      <div class="col-12">
+        <label class="form-label">Observação</label>
+        <textarea class="form-control" name="observacao" rows="3">{{ deposito.observacao or '' }}</textarea>
+      </div>
+      <div class="col-12 d-flex justify-content-end gap-2">
+        <a class="btn btn-outline-secondary" href="{{ url_for('admin_depositos') }}">Voltar</a>
+        <button class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+    <hr>
+    <form method="post" action="{{ url_for('admin_deposito_delete', deposito_id=deposito.id) }}" onsubmit="return confirm('Excluir este depósito?');">
+      <button class="btn btn-outline-danger btn-sm">Excluir</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

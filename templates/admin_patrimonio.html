@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Patrimônio</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <form method="post" class="row g-2">
+      <div class="col-md-3">
+        <label class="form-label">Categoria</label>
+        <input class="form-control" name="categoria" placeholder="Ex: TI, Mobiliário" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label">Descrição</label>
+        <input class="form-control" name="descricao" required>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status">
+          <option value="em_uso">Em uso</option>
+          <option value="em_estoque">Em estoque</option>
+          <option value="alocado">Alocado</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="baixado">Baixado</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Local atual (opcional)</label>
+        <select class="form-select" id="local_select" name="local_atual_id"></select>
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+    <div class="form-text mt-2">O código é gerado automaticamente no formato PAT-000001.</div>
+  </div>
+</div>
+
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h6 mb-2">Importar patrimônio em massa (CSV ou XLSX)</h2>
+    <form method="post" action="{{ url_for('admin_patrimonio_import') }}" enctype="multipart/form-data" class="row g-2 align-items-end">
+      <div class="col-md-8">
+        <label class="form-label">Arquivo</label>
+        <input class="form-control" type="file" name="arquivo" accept=".csv,.xlsx" required>
+        <div class="form-text">Colunas: categoria,descricao,status(opcional),local_id(opcional),marca,modelo,serial,responsavel,valor(opcional)</div>
+      </div>
+      <div class="col-md-4 d-grid">
+        <button class="btn btn-outline-primary">Importar</button>
+      </div>
+    </form>
+    <div class="mt-2">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_patrimonio_modelo') }}">Baixar modelo CSV</a>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <form class="row g-2 mb-2" method="get">
+      <div class="col-md-3">
+        <input class="form-control" name="q" value="{{ q }}" placeholder="Buscar (descrição, categoria, serial)">
+      </div>
+      <div class="col-md-3">
+        <select class="form-select" name="status">
+          <option value="">Todos status</option>
+          {% for s in ["em_uso","em_estoque","alocado","manutencao","baixado"] %}
+            <option value="{{ s }}" {% if status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input class="form-control" name="local_id" value="{{ local_id or '' }}" placeholder="Local ID">
+      </div>
+      <div class="col-md-3 d-grid">
+        <button class="btn btn-outline-primary">Filtrar</button>
+      </div>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-sm align-middle">
+        <thead><tr><th>Código</th><th>Categoria</th><th>Descrição</th><th>Status</th><th>Local</th><th></th></tr></thead>
+        <tbody>
+          {% for it in itens %}
+            <tr>
+              <td><span class="badge bg-dark">{{ it.codigo }}</span></td>
+              <td>{{ it.categoria }}</td>
+              <td>{{ it.descricao }}</td>
+              <td>{{ it.status }}</td>
+              <td>{{ it.local_atual_id or '-' }}</td>
+              <td class="text-end"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin_patrimonio_edit', item_id=it.id) }}">Editar</a>
+<form method="post" action="{{ url_for('admin_patrimonio_delete', item_id=it.id) }}" class="d-inline" onsubmit="return confirm('Excluir este item?');">
+  <button class="btn btn-sm btn-outline-danger ms-2">Excluir</button>
+</form></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-2">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('export_patrimonio_xlsx') }}">Exportar CSV</a>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  $('#local_select').select2({
+    width:'100%', allowClear:true, minimumInputLength: 0,
+    placeholder:'Buscar local...',
+    ajax:{ url:"{{ url_for('api_locais') }}", dataType:'json', delay:250,
+      data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+  });
+});
+</script>
+
+{% endblock %}

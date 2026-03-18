@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h5 mb-3">Movimentações de Patrimônio</h1>
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <h2 class="h6 mb-2">Registrar movimentação</h2>
+    <form method="post" action="{{ url_for('admin_patrimonio_mov_add') }}" class="row g-2">
+      <div class="col-md-4">
+        <label class="form-label">Item</label>
+        <select class="form-select" id="item_select" name="item_id" required></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" name="tipo">
+          <option value="transferencia">Transferência</option>
+          <option value="entrada">Entrada</option>
+          <option value="manutencao">Manutenção</option>
+          <option value="alocado">Alocado</option>
+          <option value="baixa">Baixa</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Origem (Local)</label>
+        <select class="form-select" id="origem_select" name="origem_local_id"></select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Destino (Local)</label>
+        <select class="form-select" id="destino_select" name="destino_local_id"></select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Projeto</label>
+        <select class="form-select" id="projeto_select" name="projeto_id"></select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Quantidade</label>
+        <input class="form-control" name="qtd" type="number" min="1" value="1" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Responsável</label>
+        <input class="form-control" name="responsavel">
+      </div>
+      <div class="col-md-8">
+        <label class="form-label">Observação</label>
+        <input class="form-control" name="observacao">
+      </div>
+      <div class="col-12 d-grid d-md-flex justify-content-end">
+        <button class="btn btn-primary">Registrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h2 class="h6">Últimas movimentações</h2>
+    <div class="table-responsive">
+      <table class="table table-sm">
+        <thead><tr><th>Data</th><th>Item</th><th>Tipo</th><th class="text-end">Qtd</th><th>Projeto</th><th>Origem</th><th>Destino</th><th>Resp.</th></tr></thead>
+        <tbody>
+          {% for mv in movs %}
+            <tr>
+              <td>{{ mv.data }}</td>
+              <td>{{ mv.item }}</td>
+              <td>{{ mv.tipo }}</td>
+              <td class="text-end">{{ mv.qtd }}</td>
+              <td>{{ mv.projeto or '-' }}</td>
+              <td>{{ mv.origem or '-' }}</td>
+              <td>{{ mv.destino or '-' }}</td>
+              <td>{{ mv.responsavel or '-' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function make(sel, url, ph){
+    $(sel).select2({
+      width:'100%', allowClear:true, minimumInputLength: 0,
+      placeholder: ph,
+      ajax:{ url:url, dataType:'json', delay:250,
+        data: p => ({q: p.term || ''}), processResults: d => ({results: d.results}) }
+    });
+  }
+  make('#item_select', "{{ url_for('api_patrimonio_itens') }}", 'Buscar item (código ou descrição)...');
+  make('#origem_select', "{{ url_for('api_locais') }}", 'Buscar local...');
+  make('#destino_select', "{{ url_for('api_locais') }}", 'Buscar local...');
+  make('#projeto_select', "{{ url_for('api_projetos') }}", 'Buscar projeto...');
+});
+</script>
+{% endblock %}
